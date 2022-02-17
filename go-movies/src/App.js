@@ -6,7 +6,7 @@ import Movies from './components/Movies';
 import Admin from './components/Admin';
 import Home from './components/Home';
 import Categories from './components/Categories';
-
+import OneMovie from './components/OneMovie';
 
 export default function App() {
   return (
@@ -48,10 +48,10 @@ export default function App() {
           {/* Switch stmt is used to indicate where we want the content to show up */}
           <Switch>
             {/* This is how to do the nested routing for movie id */}
-            <Route path='/movies/:id'>
+            {/* <Route path='/movies/:id'>
               <Movie />
-            </Route>
-
+            </Route> */}
+            <Route path="/movies/:id" component={OneMovie}></Route>
             <Route path="/movies">
               <Movies />
             </Route>
@@ -84,10 +84,6 @@ export default function App() {
   );
 }
 
-function Movie() {
-  let { id } = useParams();
-  return <h2>Movie id {id}</h2>
-}
 
 function CategoryPage() {
   let { path, url } = useRouteMatch();

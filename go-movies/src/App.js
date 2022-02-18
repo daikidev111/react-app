@@ -8,7 +8,7 @@ import Home from './components/Home';
 import OneMovie from './components/OneMovie';
 import Genres from './components/Genres';
 import OneGenre from './components/OneGenre';
-
+import EditMovie from './components/EditMovie';
 export default function App() {
   return (
     //Wrap everything you want to be routed
@@ -38,6 +38,9 @@ export default function App() {
                 <Link to='/genres'>Genres</Link>
               </li>
               <li className='list-group-item'>
+                <Link to='/admin/movie/0'>Add movie</Link>
+              </li>
+              <li className='list-group-item'>
                 {/* <a href='/admin'>Manage Catalogue</a> */}
                 <Link to='/admin'>Manage Catalogue</Link>
               </li>
@@ -62,6 +65,8 @@ export default function App() {
             <Route exact path="/genres">
               <Genres />
             </Route>
+
+            <Route path="/admin/movie/:id" component={EditMovie}/>
             
             <Route path="/admin">
               <Admin />

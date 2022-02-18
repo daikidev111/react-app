@@ -14,8 +14,8 @@ import (
 
 var validUser = models.User{
 	ID:       10,
-	Email:    "a@gmail.com",
-	Password: "$2a$12$GBaAEVr7Xuas81sLY7Za5eueQjXUL0M7Wup5uyX8ssDZalN0j07nm",
+	Email:    "me@here.com",
+	Password: "$2a$12$YZmO3zxVXaKGXORRDxMleOD8COPtz85eSfuxB3ulSwfZmQ6uNzmE2",
 }
 
 type Credentials struct {
@@ -23,7 +23,7 @@ type Credentials struct {
 	Password string `json:"password"`
 }
 
-func (app *application) Singin(w http.ResponseWriter, r *http.Request) {
+func (app *application) Signin(w http.ResponseWriter, r *http.Request) {
 	var creds Credentials
 
 	err := json.NewDecoder(r.Body).Decode(&creds)
@@ -39,6 +39,7 @@ func (app *application) Singin(w http.ResponseWriter, r *http.Request) {
 		app.errorJSON(w, errors.New("unauthorized"))
 		return
 	}
+
 	var claims jwt.Claims
 	claims.Subject = fmt.Sprint(validUser.ID)
 	claims.Issued = jwt.NewNumericTime(time.Now())
@@ -52,5 +53,6 @@ func (app *application) Singin(w http.ResponseWriter, r *http.Request) {
 		app.errorJSON(w, errors.New("error signing"))
 		return
 	}
-	app.writeJSON(w, http.StatusOK, jwtBytes, "response")
+
+	app.writeJSON(w, http.StatusOK, string(jwtBytes), "reponse")
 }

@@ -16,3 +16,6 @@ go get github.com/pascaldekloe/jwt
 
 install bcrypt
 go get golang.org/x/crypto/bcrypt
+
+install
+go get github.com/justinas/alice

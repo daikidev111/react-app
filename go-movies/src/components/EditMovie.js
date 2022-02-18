@@ -3,6 +3,10 @@ import './EditMovie.css'
 import Input from './form-components/input'
 import TextArea from './form-components/TextArea'
 import Select from './form-components/Select'
+import Alert from './ui-components/Alert'
+import {Link} from 'react-router-dom'
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
 export default class EditMovie extends Component {
     state = {
@@ -47,6 +51,11 @@ export default class EditMovie extends Component {
             ],
             isLoaded: false,
             error: null,
+            errors: [],
+            alert: {
+                type: "d-none",
+                messaeg: ""
+            }
         }
 
         this.handleChange = this.handleChange.bind(this)
@@ -55,6 +64,18 @@ export default class EditMovie extends Component {
 
     handleSubmit = (event) => {
         event.preventDefault();
+
+        // client side validation
+        let errors = [];
+        if (this.state.movie.title === "") {
+            errors.push("title");
+        }
+
+        this.setState({errors: errors})
+
+        if (errors.length > 0) { // if errors 
+            return false;
+        }
 
         const data = new FormData(event.target);
         const payload = Object.fromEntries(data.entries())
@@ -67,7 +88,15 @@ export default class EditMovie extends Component {
         fetch('http://localhost:4000/v1/admin/editmovie', requestOptions)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
+                if (data.error) {
+                    this.setState({
+                        alert: {type: "alert-danger", message: data.error.message}
+                    });
+                } else {
+                    this.setState({
+                        alert: {type: "alert-success", message: "Changes Saved!"}
+                    });
+                }
             })
     }
 
@@ -81,6 +110,11 @@ export default class EditMovie extends Component {
                 [name]:value,
             }
         }))
+    }
+
+
+    hasError(key) {
+        return this.state.errors.indexOf(key) !== -1;
     }
 
     componentDidMount() {
@@ -129,6 +163,37 @@ export default class EditMovie extends Component {
             this.setState({isLoaded: true})
         }
     }
+
+    confirmDelete = (e) => {
+        confirmAlert({
+            title: 'Delete Movie?',
+            message: 'Are you sure?',
+            buttons: [
+              {
+                label: 'Yes',
+                onClick: () => {
+                    fetch("http://localhost:4000/v1/admin/deletemovie/"+ this.state.movie.id, {method: "GET"})
+                        .then(response => response.json)
+                        .then(data => {
+                            if (data.error) {
+                                this.setState({
+                                    alert: {type: "alert-danger", message: data.error.message}
+                                })
+                            } else {
+                                this.props.history.push({
+                                    pathname: "/admin"
+                                })
+                            }
+                        })
+                }
+              },
+              {
+                label: 'No',
+                onClick: () => {}
+              }
+            ]
+          });
+    }
     render() {
         let {movie, isLoaded, error} = this.state;
 
@@ -140,6 +205,10 @@ export default class EditMovie extends Component {
             return (
                 <Fragment>
                     <h2>Add/Edit Movie</h2>
+                    <Alert
+                        alertType={this.state.alert.type}
+                        alertMessage={this.state.alert.message}
+                    />
                     <hr />
                     <form onSubmit={this.handleSubmit}>
                         <input 
@@ -151,11 +220,14 @@ export default class EditMovie extends Component {
                         />
     
                         <Input
-                            title={"title"}
+                            title={"Title"}
+                            className={this.hasError("title") ? "is-valid" : ""}
                             type={"text"}
                             name={"title"}
                             value={movie.title}
                             handleChange={this.handleChange}
+                            errorDiv ={this.hasError("title") ? "text-danger" : "d-none"}
+                            errorMsg = {"Please input a title"}
                         />
     
                         <Input
@@ -201,11 +273,19 @@ export default class EditMovie extends Component {
                         />
                         <hr />
                         <button className='btn btn-primary'>Save</button>
+                        <Link to="/admin" className="btn btn-warning ms-1">
+                            Cancel
+                        </Link>
+                        {/* Conditional rendering */}
+                        {movie.id > 0 && (
+                            <a href="#!" onClick={() => this.confirmDelete()}
+                            className="btn btn-danger ms-1">Delete</a>
+                        )}
                     </form>
     
-                    <div className='mt-3'>
+                    {/* <div className='mt-3'>
                         <pre>{JSON.stringify(this.state, null, 3)}</pre>
-                    </div>
+                    </div> */}
                 </Fragment>
             )
         }

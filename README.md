@@ -53,6 +53,19 @@ Below is an instruction on installing and setting up this project.
         psql -d go -f go_movies.sql
         Check if it successfully imported the sql file 
 
+    5. Configure the database
+        Change the database connection setting under react-app/backend-app/cmd/api/main.go line48 to the following below;
+        flag.StringVar(&cfg.db.dsn, "dsn", "postgres://{the username you used to connect the database}@localhost/go?sslmode=disable", "Postgres connection string")
+
+    6. Start the project
+
+        cd backend-app
+        go run cmd/api/*.go
+        -> it should show: timestamp Starting server on port 4000
+        cd go-movies
+        npm start
+
+
 My Personal Note:
 How to start a go project
 -> gomod init backend

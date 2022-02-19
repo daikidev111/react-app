@@ -86,7 +86,7 @@ export default class EditMovie extends Component {
         const requestOptions = {
             method: 'POST',
             body: JSON.stringify(payload),
-            headers: myHeaders
+            headers: myHeaders // must declare the headers for sending jwt token to the backend
         }
 
         fetch('http://localhost:4000/v1/admin/editmovie', requestOptions)
@@ -128,7 +128,14 @@ export default class EditMovie extends Component {
         //         mpaa_rating: "R"
         //     }
         // });
-        console.log("JWT in Edit", this.props.jwt)
+        
+        // if the user is not logged in then redirect to the login page
+        if (this.props.jwt == "") {
+            this.props.history.push({
+                pathname: "/login"
+            });
+            return
+        }
         const id = this.props.match.params.id
         if (id > 0) {
             fetch("http://localhost:4000/v1/movie/" + id)
@@ -177,7 +184,10 @@ export default class EditMovie extends Component {
               {
                 label: 'Yes',
                 onClick: () => {
-                    fetch("http://localhost:4000/v1/admin/deletemovie/"+ this.state.movie.id, {method: "GET"})
+                    const myHeaders = new Headers();
+                    myHeaders.append("Content-Type", "application/json");
+                    myHeaders.append("Authorization", "Bearer " + this.props.jwt);
+                    fetch("http://localhost:4000/v1/admin/deletemovie/"+ this.state.movie.id, {method: "GET", headers: myHeaders})
                         .then(response => response.json)
                         .then(data => {
                             if (data.error) {

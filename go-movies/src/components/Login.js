@@ -76,6 +76,8 @@ export default class Login extends Component {
                 //  }
                 // objectify the json and retrieve the value at index of 0            
                 this.handleJWTChange(Object.values(data)[0]);
+                //saving the login info in the localstorage
+                window.localStorage.setItem("jwt", JSON.stringify(Object.values(data)[0]))
                 // redirect
                 this.props.history.push({
                   pathname: "/admin"
